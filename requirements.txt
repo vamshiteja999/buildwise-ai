@@ -1,0 +1,7 @@
+qdrant-client==1.13.3
+requests==2.32.3
+python-dotenv==1.0.1
+PyMuPDF==1.25.5
+pytesseract==0.3.13
+Pillow==11.1.0
+streamlit>=1.40,<2

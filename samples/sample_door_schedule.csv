@@ -1,0 +1,11 @@
+Door No,Room,Type,Width (in),Fire Rating,Hardware Set,Notes
+101,Main Lobby,Aluminum storefront,72,None,HW-1,Automatic operator; ADA push plate
+102,Reception,Hollow metal,36,20 min,HW-2,
+103,Conference Room A,Wood solid core,36,20 min,HW-3,Sound gasket
+104,Corridor,Hollow metal,36,45 min,HW-2,Closer and magnetic hold-open
+105,Electrical Room,Hollow metal,36,90 min,HW-4,Keyed lock; label "Electrical - Authorized Personnel"
+106,Storage,Hollow metal,36,None,HW-5,
+107,Stair 1,Hollow metal,36,90 min,HW-6,Panic hardware; exit sign above
+108,Restroom (Women),Wood solid core,36,None,HW-7,ADA compliant; clearance 18 in latch side
+109,Restroom (Men),Wood solid core,36,None,HW-7,ADA compliant; clearance 18 in latch side
+110,Mechanical Room,Hollow metal,72,90 min,HW-4,Double leaf; louver

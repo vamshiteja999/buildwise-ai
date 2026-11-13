@@ -1,0 +1,18 @@
+question,expected_source,expected_answer,type,answer_keywords,expected_section,focus
+What is the revision date of BD-002 and who approved it?,building code services administrative guideline,"8/14/24, approved by Mark Lodge, Director.",easy,8/14/24|lodge,Page 1 header,title block
+What is the minimum font size for text on plans?,building code services administrative guideline,At least 10-pt.,easy,10-pt,General Requirements F,single fact
+Above what construction cost must documents be signed and sealed?,building code services administrative guideline,"Greater than $125,000.",easy,"125,000",General Requirements U,single fact
+What can the north arrow direction be?,building code services administrative guideline,Either up (toward the top of the sheet) or to the right.,easy,up|right,General Requirements O,single fact
+What must be provided on compact disk at the end of the project?,building code services administrative guideline,"A set of as-built documents in PDF format, before final certificate of occupancy.",easy,as-built|pdf,General Requirements T,single fact
+Which comment number prefix does Building Code Services use for civil review comments?,building code services administrative guideline,"C1, C2 etc.",easy,c1,General Requirements G.2,single fact
+What does the sheet index need to show at a minimum?,building code services administrative guideline,"Sheet number, title, original date, latest revision number, latest revision date, previous Building Code Services approval date.",multi,sheet number|title|original date|latest revision number|latest revision date|approval date,General Requirements D.3,list
+What is the difference in the geotechnical report between Schematic Design and Design Development?,building code services administrative guideline,SD: may be a preliminary report. DD: completed geotechnical engineer's report.,multi,preliminary|completed,SD B.4; DD C.1,phase disambiguation
+What does a Shell Only permit require for structural that a Foundation Only permit does not?,building code services administrative guideline,"Column schedules, beam and lintel schedules, and joist (floor and roof) schedules.",multi,column|beam and lintel|joist,Shell Only F.1-3,phase disambiguation
+What must a DD HVAC design notebook look like?,building code services administrative guideline,"Letter size in a 3-ring binder with identification, table of contents, and tabs for each AHU.",multi,letter|3-ring|table of contents|tab,DD F.1.a,list
+What are the requirements for exterior cleanouts in the CD plumbing section?,building code services administrative guideline,24 x 24 x 4 inch concrete pads around the cleanouts.,easy,24,CD 8.a.xi.5,single fact
+Which HVAC specification sections must not be edited in CD?,building code services administrative guideline,Sections 23 08 00 and 23 05 93.,easy,23 08 00|23 05 93,CD 7.b.i,single fact
+What must the electrical site plan show at CD at a minimum?,building code services administrative guideline,"Power company transformer, main switchgear, emergency generator, distribution panels, fire alarm control panel, ITV tower, and other equipment.",multi,transformer|switchgear|generator,CD 6.a,list
+What is the sheet number for the Life Safety Plan in Appendix A?,building code services administrative guideline,LS-001.,easy,ls-001,Appendix A,table lookup
+What sheet number is the Food Service Plan in Appendix A?,building code services administrative guideline,FS-001.,easy,fs-001,Appendix A,table lookup
+What is the permit application fee for a school district permit?,none,I could not find this in the documents.,unanswerable,,,not in documents
+How many days does Building Code Services take to review a submittal?,none,I could not find this in the documents.,unanswerable,,,not in documents

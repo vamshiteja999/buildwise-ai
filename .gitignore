@@ -1,0 +1,25 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+data/qdrant/
+logs/*.log
+reports/*.json
+reports/*.md
+
+# secrets and backups
+.env.before_*
+*.before_*
+.env.bak
+
+# local data and generated files
+data/raw/
+logs/
+*.zip
+.DS_Store
+.pytest_cache/
+.vscode/
+Claude outputs/
+ziPJX0qc
+reports/chunks_dump.txt
+reports/*.txt

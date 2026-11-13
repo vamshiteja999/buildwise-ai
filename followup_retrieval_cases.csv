@@ -1,0 +1,11 @@
+id,history,message,expect_source_any
+1,"[[""user"",""Which documents are required for a Boca Raton metal roof permit?""],[""assistant"",""Building Permit Application, product approvals, uplift pressures [1]""]]",can you elaborate section B,supplemental roof
+2,"[[""user"",""Which documents are required for a Boca Raton metal roof permit?""],[""assistant"",""Building Permit Application, product approvals [1]""]]",and for a flat roof?,supplemental roof
+3,"[[""user"",""What is the minimum top rail height for a guardrail system?""],[""assistant"",""42 inches plus or minus 3 inches [1].""]]",what about midrails?,1926.502|osha3146
+4,"[[""user"",""What is the minimum top rail height for a guardrail system?""],[""assistant"",""42 inches plus or minus 3 inches [1].""]]",how strong must it be?,1926.502|osha3146
+5,"[[""user"",""What does the fall protection training requirement say?""],[""assistant"",""The employer must provide a training program [1].""]]",who must provide it?,1926.503|osha3146
+6,"[[""user"",""Who designed Fire Rescue Station 25?""],[""assistant"",""Currie Sowards Aguila Architects [1].""]]",what about the keynotes on the elevations?,sw & se|community letter
+7,"[[""user"",""What are the accessibility requirements for a swimming pool lift?""],[""assistant"",""A pool lift needs clear floor space [1].""]]",what about the seat height?,chapter 10
+8,"[[""user"",""What is a foundation only permit?""],[""assistant"",""A permit for foundation work only [1].""]]",what are its minimum requirements?,building code services
+9,[],"dont give me foundation only permit requirements, give me the shell permit ones",building code services
+10,[],what is the top rail height and what are the training requirements?,1926.502|osha3146|1926.503
