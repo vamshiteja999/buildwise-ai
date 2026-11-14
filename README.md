@@ -103,4 +103,4 @@ All settings live in `config.py` and can be overridden in `.env`: `ANSWER_MODEL`
 Qdrant data is local under `data/qdrant`. The storage interface is isolated in `buildwise/core.py` (`get_client`, `hybrid_search`), so a cloud backend (for example Azure AI Search with Blob storage) can replace those functions without changing the app.
 
 ## License
-MIT. See [`LICENSE`](LICENSE). The sample company in `samples/demo_company/` is fictional.
+Copyright (c) 2026 Kaspe. All rights reserved. The code is public for viewing and evaluation only; using, copying or selling it requires written permission. See [`LICENSE`](LICENSE). The sample company in `samples/demo_company/` is fictional.
