@@ -1460,6 +1460,7 @@ def ordinal_reply(question, history):
     last = next((c for r, c in reversed(history or []) if r != "user"), "")
     if "documents indexed" not in str(last):
         return None
+    question = re.sub(r"\b(\d{1,2})\s+(st|nd|rd|th)\b", r"\1\2", question)
     m = ORDINAL_DOC_RE.search(question)
     if not m:
         return None
@@ -1482,10 +1483,50 @@ def ordinal_reply(question, history):
     return f"Document {n} is {name}: {pages}, split into {chunks} searchable passages."
 
 
+RECENT_DOC_RE = re.compile(
+    r"\b(?:recent(?:ly)?|latest|newest|last|most\s+recent)\b.{0,30}\b(?:doc\w*|files?|pdfs?)\b"
+    r"|\b(?:doc\w*|files?|pdfs?)\b.{0,30}\b(?:recent(?:ly)?|latest|newest|last)\b.{0,15}\b(?:added|indexed|uploaded)\b"
+    r"|\b(?:doc\w*|files?|pdfs?)\b.{0,30}\b(?:added|indexed|uploaded)\s+(?:last|most\s+recently|recently)\b", re.I)
+
+
+ALSO_RECENT_RE = re.compile(r"\b(?:most\s+recent|latest|newest|recent(?:ly)?|last)\s+(?:one|added|uploaded|indexed)\b", re.I)
+
+
+def newest_document(names):
+    """(file name, 'November 16, 2026 at 03:50 PM') for the indexed file that was saved last, or None."""
+    files = [p for p in DATA_DIR.rglob("*") if p.is_file() and p.name in names]
+    if not files:
+        return None
+    newest = max(files, key=lambda p: p.stat().st_mtime)
+    return newest.name, time.strftime("%B %d, %Y at %I:%M %p", time.localtime(newest.stat().st_mtime))
+
+
+def recent_reply(question):
+    """'what is the most recent document indexed?' -> the indexed file that was saved last."""
+    if len(question.split()) > 14 or not RECENT_DOC_RE.search(question):
+        return None
+    if META_RE.search(question) and re.search(r"\bhow\s+many\b|\blist\b|\ball\b", question, re.I):
+        return None  # also asks for the list: meta_reply answers both parts
+    try:
+        names = {d[0] for d in list_indexed_documents()}
+    except Exception:
+        return None
+    found = newest_document(names)
+    if not found:
+        return None
+    return (f"The most recently added document is {found[0]} (saved {found[1]}). "
+            f"I have {len(names)} documents in total. Ask 'summarize {found[0]}' to see what it covers.")
+
+
 def meta_reply(question):
     if len(question.split()) > 28:
         return None
-    ftype = FILE_TYPE_RE.search(question) and FILE_INTENT_RE.search(question) and not re.search(r"\d", question)
+    recent = recent_reply(question)
+    if recent:
+        return recent
+    # "do you have a csv file?" and also the bare "csv files?" / "any pdf documents?"
+    ftype = (FILE_TYPE_RE.search(question) and (FILE_INTENT_RE.search(question) or len(question.split()) <= 4)
+             and not re.search(r"\d", question))
     if not ftype and (len(question.split()) > 18 or not META_RE.search(question)):
         return None
     try:
@@ -1506,6 +1547,12 @@ def meta_reply(question):
         return "No documents are indexed yet. Upload some on the Admin page, then ask again."
     lines = ["I have %d documents indexed:" % len(docs)]
     lines += ["- %s (%d passages)" % (name, n) for name, n in docs]
+    if RECENT_DOC_RE.search(question) or ALSO_RECENT_RE.search(question):
+        found = newest_document({name for name, _ in docs})
+        if found:
+            lines.append("")
+            lines.append(f"The most recently added one is {found[0]} (saved {found[1]}).")
+    lines.append("")
     lines.append("Ask me anything these cover, such as OSHA fall protection, accessibility rules, permit requirements or drawing notes.")
     return "\n".join(lines)
 
@@ -1524,10 +1571,27 @@ def _name_tokens(name):
     return {t for t in re.findall(r"[a-z0-9]+", base.lower()) if len(t) >= 4 and t not in _GENERIC_NAME_WORDS}
 
 
+def ordinal_number(question):
+    """'2nd document', '2 nd document', 'third file', 'document 3' -> 2, 2, 3, 3. None when no position is named.
+    The word after the position only has to start like 'doc' or 'file', so 'documnent' still counts."""
+    q = re.sub(r"\b(\d{1,2})\s+(st|nd|rd|th)\b", r"\1\2", question.lower())
+    thing = r"(?:doc\w*|files?)"
+    m = re.search(r"\b(" + "|".join(ORDINALS) + r")\s+" + thing + r"\b", q)
+    if m:
+        return ORDINALS[m.group(1)]
+    m = re.search(r"\b(?:doc\w*|file)\s+(?:number\s+|no\.?\s*|#\s*)?(\d{1,2})\b", q) or re.search(r"\b(?:number|no\.?|#)\s*(\d{1,2})\b", q)
+    return int(m.group(1)) if m else None
+
+
 def resolve_document(question, history, docs):
     """Which indexed document does the message mean? Returns (name, None) or (None, clarification) or (None, None)."""
     names = [d[0] for d in docs]
     q = question.lower()
+    n = ordinal_number(question)
+    if n:
+        if 1 <= n <= len(names):
+            return names[n - 1], None
+        return None, f"I only have {len(names)} documents, so there is no document {n}. Ask 'what documents do you have' to see the list."
     m = re.search(r"\bchapter\s+(\d+)\b", q)
     if m:
         chap = [n for n in names if re.search(r"\bchapter\s+" + m.group(1) + r"\b", n.lower())]
@@ -1570,14 +1634,23 @@ def resolve_document(question, history, docs):
 
 def summary_reply(question, history):
     """'summarize that file' / 'what is X about' for one indexed document. Returns (answer, citations) or None."""
-    if (len(question.split()) > 22 or not SUMMARY_INTENT_RE.search(question)
-            or re.search(r"\b(?:say|says|state|states|specif\w*|require\w*|mean|means)\b", question, re.I)):
+    if len(question.split()) > 22:
         return None
     try:
         docs = list_indexed_documents()
     except Exception:
         return None
-    name, ask_back = resolve_document(question, history, docs)
+    # Take an exact file name out of the message first, so words inside the name ("requirements") do not count,
+    # and so "ummarize <file name>" or just "<file name>?" still means "tell me about this file".
+    named = next((d[0] for d in sorted(docs, key=lambda d: -len(d[0])) if d[0].lower() in question.lower()), None)
+    rest = re.sub(re.escape(named), " ", question, flags=re.I) if named else question
+    rest_words = re.findall(r"[A-Za-z']+", rest.lower())
+    typo = any(difflib.SequenceMatcher(None, w, t).ratio() >= 0.8
+               for w in rest_words if len(w) >= 6 for t in ("summarize", "summarise", "summary", "overview", "describe"))
+    wants_summary = SUMMARY_INTENT_RE.search(rest) or typo or (named and len(rest_words) <= 1)
+    if not wants_summary or re.search(r"\b(?:say|says|state|states|specif\w*|require\w*|mean|means)\b", rest, re.I):
+        return None
+    name, ask_back = (named, None) if named else resolve_document(question, history, docs)
     if ask_back:
         return ask_back, []
     if not name:
@@ -1590,12 +1663,22 @@ def summary_reply(question, history):
         if offset is None:
             break
     chunks.sort(key=lambda p: (p.get("page_number") or 0))
+    # Read the whole document when it is short; otherwise take evenly spaced passages from start to end,
+    # so the summary covers the whole file and not just its first pages.
+    budget = 6000
+    if sum(len((p.get("text") or "")) for p in chunks) <= budget:
+        picked = chunks
+    else:
+        count = min(len(chunks), 12)
+        step = (len(chunks) - 1) / max(count - 1, 1)
+        picked = [chunks[round(i * step)] for i in range(count)]
+    share = max(budget // max(len(picked), 1), 300)
     used, text = 0, ""
-    for p in chunks:
+    for p in picked:
         piece = (p.get("text") or "").strip()
-        if text and len(text) + len(piece) > 6000:
-            break
-        text += piece[:6000] + "\n\n"
+        if not piece:
+            continue
+        text += piece[:share] + "\n\n"
         used += 1
     if not text.strip():
         return None
