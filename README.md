@@ -1,6 +1,7 @@
 # BuildWise AI: Local Construction-Document Assistant
 
 Ask plain-English questions about construction documents and get answers with citations. Everything runs on your own machine: no cloud API, and no document leaves the laptop.
+**[▶ Watch the 90-second demo](https://drive.google.com/file/d/1jD-R7Fvtb7z0D254KBqkcbM1t7TCoQYp/view?usp=sharing)**
 
 **Built for:** OSHA fall-protection rules, the Florida Building Code accessibility chapter, Boca Raton permit forms, drawing sheets, and project packages.
 
