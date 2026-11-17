@@ -171,3 +171,25 @@ def test_retry_recovers_a_refusal_only_when_the_second_attempt_answers(monkeypat
     assert core.answer_with_retry("question")[0] == "Found it [1]"
     monkeypatch.setattr(core, "answer_question", lambda q, extra_queries=None: (core.REFUSAL_TEXT, []))
     assert core.answer_with_retry("question")[0] == core.REFUSAL_TEXT
+
+
+def test_document_position_is_understood_with_typos_and_spacing():
+    assert core.ordinal_number("what is 2 nd document about?") == 2
+    assert core.ordinal_number("can you summarize 3rd documnent?") == 3
+    assert core.ordinal_number("summarize the third file") == 3
+    assert core.ordinal_number("summarize document 5") == 5
+    for q in ["What is the fire rating of door 101?", "summarize 1926.502", "summarize the chapter 10 file",
+              "what does keynote 07 61 03 specify", "what is the first one about"]:
+        assert core.ordinal_number(q) is None, q
+    docs = [("a.pdf", 1), ("b.pdf", 1), ("c.csv", 1)]
+    assert core.resolve_document("what is 2nd document about?", [], docs) == ("b.pdf", None)
+    name, ask_back = core.resolve_document("summarize the 9th document", [], docs)
+    assert name is None and "only have 3" in ask_back
+
+
+def test_recent_document_questions_are_recognised():
+    for q in ["what is the recent document indexed?", "which file was added last?", "most recent file uploaded"]:
+        assert core.RECENT_DOC_RE.search(q), q
+    for q in ["what is the latest revision of sheet A-002", "what is the last step in the permit process",
+              "what documents do you have"]:
+        assert not core.RECENT_DOC_RE.search(q), q
