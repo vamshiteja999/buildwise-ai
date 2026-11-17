@@ -9,9 +9,9 @@ Ask plain-English questions about construction documents and get answers with ci
 - **Refuses when it should.** Questions the documents cannot answer get "I could not find this in the documents".
 - **Reads messy documents.** Text PDFs, scanned PDFs (OCR), tables, drawing sheets, Word files (`.docx`), spreadsheets saved as `.csv`, text and Markdown.
 - **Understands the conversation.** Greetings and small talk get an instant reply; follow-ups such as "what about midrails?" or "does 16.1 inch work?" are resolved from earlier turns; several questions in one message are answered one by one; "don't give me X, give me Y" searches for Y.
-- **Knows its own library.** "What documents do you have?", "do you have a CSV?", "how many pages is the 3rd document?" and "summarize the Chapter 10 file" are answered straight from the index.
+- **Knows its own library.** "What documents do you have?", "do you have a CSV?", "how many pages is the 3rd document?", "what is the most recent document?" and "summarize the 2nd document" are answered straight from the index.
 - **Admin upload page.** Password-protected: upload, index, replace or remove documents without touching code.
-- **Measured, not guessed.** Evaluation sets for answers (71 questions), routing (60 messages) and follow-ups; every change and every run is logged in [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md), including the experiments that did not work.
+- **Measured, not guessed.** Evaluation sets for answers (71 questions), routing (69 messages) and follow-ups; every change and every run is logged in [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md), including the experiments that did not work.
 
 ## Results (71 hand-checked questions, temperature 0)
 
@@ -51,6 +51,7 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ollama pull nomic-embed-text
 ollama pull qwen3:8b          # 16 GB machine; use qwen3:1.7b on an 8 GB machine
+brew install tesseract        # optional: lets it read scanned PDFs
 ```
 
 Put documents in `data/raw/` (or upload them in the app), then:
@@ -75,7 +76,7 @@ Only one program can use the local database at a time: close the app before runn
 | Command | What it checks |
 |---|---|
 | `python eval.py` | 71 golden questions: retrieval, answers, citations, refusals. Use `TEMPERATURE=0 EVAL_REPORT=name.md` for comparable runs |
-| `python eval_routing.py` | Where 60 messages are routed (chat, document list, summary, search) and whether follow-ups, splits and exclusions are rewritten correctly |
+| `python eval_routing.py` | Where 69 messages are routed (chat, document list, summary, search) and whether follow-ups, splits and exclusions are rewritten correctly |
 | `python eval_followups.py` | Whether the conversation-aware rewrite helps or hurts retrieval |
 | `python diagnose_refusals.py <report>` | Which stage (answer gate or answer check) refused each question |
 | `bash run_model_compare.sh <model>` | Routing plus the full answer eval for one model |
